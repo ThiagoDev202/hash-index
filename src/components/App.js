@@ -11,37 +11,40 @@ function App() {
   const [pageSize, setPageSize] = useState(100);
   const [bucketSize, setBucketSize] = useState(10);
   const [hashCount, setHashCount] = useState(10);
+  const [lines, setLines] = useState([]);
+  const [currentPage, setCurrentPage] = useState(0);
+  const linesPerPage = 10000;
 
   useEffect(() => {
+    // Carregar o arquivo words.txt como default
     fetch(process.env.PUBLIC_URL + '/data/words.txt')
       .then(response => response.text())
       .then(text => {
-        const lines = text.split('\n').slice(0, 10000); // Limite o número de linhas carregadas
-        const newTable = new Table();
-        newTable.loadData(lines);
-        console.log("Tabela carregada com", lines.length, "linhas");
-        setTable(newTable);
+        const allLines = text.split('\n');
+        setLines(allLines);
+        loadTable(allLines.slice(0, linesPerPage));
       })
       .catch(error => console.error('Erro ao carregar o arquivo words.txt:', error));
   }, []);
-  
+
+  const loadTable = (linesToLoad) => {
+    const newTable = new Table();
+    newTable.loadData(linesToLoad);
+    setTable(newTable);
+  };
 
   const handleSubmit = () => {
     if (table) {
       const newHashIndex = new HashIndex(table, pageSize, bucketSize, hashCount);
-      console.log(newHashIndex); // Verificar a estrutura do hash criada
       setHashIndex(newHashIndex);
-    } else {
-      console.log('Tabela não carregada corretamente');
     }
   };
-  
 
   const handleSearch = () => {
     if (hashIndex) {
       const result = hashIndex.search(searchKey);
       setSearchResult(result);
-      setTableScanResult(null); // Limpar resultado do table scan ao fazer nova busca
+      setTableScanResult(null);
     }
   };
 
@@ -57,8 +60,17 @@ function App() {
           }
         }
       }
-      setTableScanResult(scanResult); // Retorna todos os dados se a chave não for encontrada
+      setTableScanResult(scanResult);
     }
+  };
+
+  const loadMoreData = () => {
+    const nextPage = currentPage + 1;
+    const start = nextPage * linesPerPage;
+    const end = start + linesPerPage;
+    const newLines = lines.slice(start, end);
+    loadTable(newLines);
+    setCurrentPage(nextPage);
   };
 
   return (
@@ -127,7 +139,10 @@ function App() {
           </div>
         )}
 
-        {/* Exibição da estrutura do Hash */}
+        {lines.length > (currentPage + 1) * linesPerPage && (
+          <button onClick={loadMoreData}>Carregar Mais Dados</button>
+        )}
+
         {hashIndex && (
           <div>
             <h2>Estrutura Hash</h2>
