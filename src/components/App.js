@@ -14,6 +14,13 @@ function App() {
   const [lines, setLines] = useState([]);
   const [currentPage, setCurrentPage] = useState(0);
   const linesPerPage = 10000;
+  const [stats, setStats] = useState({
+    nrBuckets: 0,
+    collisions: 0,
+    overflows: 0,
+    searchCost: 0,
+    tableScanCost: 0,
+  });
 
   useEffect(() => {
     // Carregar o arquivo words.txt como default
@@ -37,7 +44,32 @@ function App() {
     if (table) {
       const newHashIndex = new HashIndex(table, pageSize, bucketSize, hashCount);
       setHashIndex(newHashIndex);
+      calculateStats(newHashIndex);
     }
+  };
+
+  const calculateStats = (hashIndex) => {
+    let collisions = 0;
+    let overflows = 0;
+    let totalAccess = 0;
+
+    hashIndex.buckets.forEach(bucket => {
+      totalAccess += bucket.tuples.length;
+      if (bucket.overflow) {
+        overflows++;
+      }
+      if (bucket.tuples.length > 1) {
+        collisions += bucket.tuples.length - 1;
+      }
+    });
+
+    setStats({
+      nrBuckets: hashIndex.buckets.length,
+      collisions: collisions,
+      overflows: overflows,
+      searchCost: totalAccess,
+      tableScanCost: hashIndex.pages.length,
+    });
   };
 
   const handleSearch = () => {
@@ -129,13 +161,24 @@ function App() {
         {tableScanResult && (
           <div>
             <h2>Resultado do Table Scan:</h2>
-            <ul>
-              {tableScanResult.map((tuple, index) => (
-                <li key={index}>
-                  Chave: {tuple.key}, Dados: {JSON.stringify(tuple.data)}
-                </li>
-              ))}
-            </ul>
+            <table>
+              <thead>
+                <tr>
+                  <th>Index</th>
+                  <th>Name</th>
+                  <th>Page</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tableScanResult.map((tuple, index) => (
+                  <tr key={index}>
+                    <td>{index}</td>
+                    <td>{tuple.key}</td>
+                    <td>{Math.floor(index / pageSize)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
 
@@ -146,36 +189,35 @@ function App() {
         {hashIndex && (
           <div>
             <h2>Estrutura Hash</h2>
-            <div>
-              <h3>Páginas</h3>
-              {hashIndex.pages.map((page, index) => (
-                <div key={index}>
-                  <h4>Página {index + 1}</h4>
-                  <ul>
-                    {page.tuples.map((tuple, idx) => (
-                      <li key={idx}>
-                        Chave: {tuple.key}, Dados: {JSON.stringify(tuple.data)}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-            <div>
-              <h3>Buckets</h3>
-              {hashIndex.buckets.map((bucket, index) => (
-                <div key={index}>
-                  <h4>Bucket {index + 1}</h4>
-                  <ul>
-                    {bucket.tuples.map((tuple, idx) => (
-                      <li key={idx}>
-                        Chave: {tuple.key}, Dados: {JSON.stringify(tuple.data)}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Index</th>
+                  <th>Name</th>
+                  <th>Page</th>
+                </tr>
+              </thead>
+              <tbody>
+                {hashIndex.pages.map((page, pageIndex) =>
+                  page.tuples.map((tuple, tupleIndex) => (
+                    <tr key={`${pageIndex}-${tupleIndex}`}>
+                      <td>{tupleIndex + pageIndex * pageSize}</td>
+                      <td>{tuple.key}</td>
+                      <td>{pageIndex}</td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+
+            <h3>Estatísticas</h3>
+            <ul>
+              <li>Número de Buckets: {stats.nrBuckets}</li>
+              <li>Colisões: {stats.collisions}</li>
+              <li>Overflows: {stats.overflows}</li>
+              <li>Estimativa de Custo de Busca: {stats.searchCost}</li>
+              <li>Estimativa de Custo de Table Scan: {stats.tableScanCost}</li>
+            </ul>
           </div>
         )}
       </header>
