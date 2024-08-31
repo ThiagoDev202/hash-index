@@ -1,6 +1,6 @@
 import Tuple from './Tuple';
 import Page from './Page';
-import Table from './Table'; // Certifique-se de importar o Table aqui
+import Table from './Table'; 
 import Bucket from './Bucket';
 import HashFunction from './HashFunction';
 import HashIndex from './HashIndex';

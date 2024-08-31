@@ -1,9 +1,11 @@
 class HashFunction {
-    constructor(bucketCount) {
+    bucketCount: number;
+
+    constructor(bucketCount: number) {
         this.bucketCount = bucketCount;
     }
 
-    hash(key) {
+    hash(key: string): number {
         // Simples função hash baseada na soma dos valores dos caracteres
         let hashValue = 0;
         for (let i = 0; i < key.length; i++) {

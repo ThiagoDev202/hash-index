@@ -1,9 +1,19 @@
 import Page from './Page';
 import Bucket from './Bucket';
 import HashFunction from './HashFunction';
+import { Tuple } from './Tuple';
+
+interface Table {
+    tuples: Tuple[];
+}
 
 class HashIndex {
-    constructor(table, pageSize, bucketSize, hashCount) {
+    table: Table;
+    pages: Page[];
+    buckets: Bucket[];
+    hashFunction: HashFunction;
+
+    constructor(table: Table, pageSize: number, bucketSize: number, hashCount: number) {
         this.table = table;
         this.pages = [];
         this.buckets = [];
@@ -34,7 +44,7 @@ class HashIndex {
         }
     }
 
-    search(key) {
+    search(key: string): Tuple | null {
         const bucketIndex = this.hashFunction.hash(key);
         return this.buckets[bucketIndex].findTuple(key);
     }

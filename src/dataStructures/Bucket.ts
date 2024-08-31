@@ -1,11 +1,17 @@
+import { Tuple } from './Tuple';
+
 class Bucket {
-    constructor(size) {
+    size: number;
+    tuples: Tuple[];
+    overflow: Bucket | null;
+
+    constructor(size: number) {
         this.size = size;
         this.tuples = [];
         this.overflow = null;
     }
 
-    addTuple(tuple) {
+    addTuple(tuple: Tuple): void {
         if (this.tuples.length < this.size) {
             this.tuples.push(tuple);
         } else {
@@ -16,7 +22,7 @@ class Bucket {
         }
     }
 
-    findTuple(key) {
+    findTuple(key: string): Tuple | null {
         for (const tuple of this.tuples) {
             if (tuple.key === key) {
                 return tuple;
