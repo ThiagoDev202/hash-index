@@ -83,16 +83,18 @@ function App() {
   const handleTableScan = () => {
     if (table) {
       let scanResult = [];
+      let resut = [];
       for (let page of hashIndex.pages) {
         for (let tuple of page.tuples) {
           scanResult.push(tuple);
           if (tuple.key === searchKey) {
-            setTableScanResult(scanResult);
+            resut.push(scanResult[scanResult.length - 1]);
+            setTableScanResult(resut);
             return;
           }
         }
       }
-      setTableScanResult(scanResult);
+      setTableScanResult(resut);
     }
   };
 
@@ -172,9 +174,9 @@ function App() {
               <tbody>
                 {tableScanResult.map((tuple, index) => (
                   <tr key={index}>
-                    <td>{index}</td>
+                    <td>{tuple.data["id"]}</td>
                     <td>{tuple.key}</td>
-                    <td>{Math.floor(index / pageSize)}</td>
+                    <td>{Math.floor(parseInt(tuple.data["id"]) / pageSize)}</td>
                   </tr>
                 ))}
               </tbody>
