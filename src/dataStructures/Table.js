@@ -4,7 +4,7 @@ class Table {
     }
 
     loadData(lines) {
-        this.tuples = lines.map((line, index) => ({ key: line.trim(), data: { id: index + 1 } }));
+        this.tuples = lines.map((line, index) => ({ key: line.trim(), data: { id: index } }));
     }
 }
 
