@@ -16,14 +16,15 @@ class Bucket {
         }
     }
 
-    findTuple(key) {
+    findTuple(key, cost = 0) {
         for (const tuple of this.tuples) {
+            cost++;
             if (tuple.key === key) {
-                return tuple;
+                return {tuple,cost};
             }
         }
         if (this.overflow) {
-            return this.overflow.findTuple(key);
+            return this.overflow.findTuple(key,cost);
         }
         return null;
     }
