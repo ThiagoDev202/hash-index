@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import Table from './dataStructures/Table';
-import "./App.css"
+import styles from "./App.module.css"
 
 
 import axios from 'axios';
 import { Entry, SearchResult, Stats } from './dataStructures/Types';
 import HashIndex from './dataStructures/HashIndex';
+import { InputRegister } from './components/InputRegiter/InputRegister';
 
 function App() {
   const [entry, setEntry] = useState<Entry>({
@@ -38,7 +39,9 @@ function App() {
         setTable(newTable)
 
         setEntry(current => ({ ...current, dataQuantity: lines.length }))
-      })
+
+      }).catch(_ => console.log("xaMAIS DARÁ"))
+
   }, []);
 
   //handles the changing of entry data
@@ -85,63 +88,31 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <header className="App-header">
+    <div className={styles.body} >
+      <header className={styles.header}>
         <h1>Índice Hash</h1>
-        <div>
-          <label>
-            Tamanho da Página:
-            <input
-              type="number"
-              value={entry.pageSize}
-              onChange={(e) => setEntry(current => ({ ...current, pageSize: Number(e.target.value) }))}
-            />
-          </label>
-          <label>
-            Tamanho do Bucket:
-            <input
-              type="number"
-              value={entry.bucketSize}
-              onChange={(e) => setEntry(current => ({ ...current, bucketSize: Number(e.target.value) }))}
-            />
-          </label>
-          <button onClick={handleSubmit}>Criar Estrutura Hash</button>
-        </div>
+      </header>
 
-        <input
-          type="text"
-          value={searchKey}
-          onChange={(e) => setSearchKey(e.target.value)}
-          placeholder="Digite a chave de busca"
+      <div className={styles.inputs}>
+        <InputRegister
+          label='Tamanho da Pagina'
+          value={entry.pageSize === 0 ? "" : entry.pageSize}
+          type='number'
+          changevalue={(new_value) => setEntry(current => ({ ...current, pageSize: Number(new_value) }))}
         />
-        <button onClick={handleSearch}>Buscar</button>
-        {searchResult && (
-          <div>
-            <h2>Resultado da Busca:</h2>
-            <div>
-              <p>Chave: {searchResult.tuple.key}</p>
-              <p>Dado: {JSON.stringify(searchResult.tuple.data)}</p>
-              <p>pagina: {searchResult.page}</p>
-              <p>Custo de Busca: {searchResult.cost}</p>
-            </div>
-          </div>
-        )}
-        <button onClick={handleTableScan}>Table Scan</button>
-        {scanResult && (
-          <div>
-            <h2>Resultado do tableScan:</h2>
-            <div>
-              <p>Chave: {scanResult.tuple.key}</p>
-              <p>Dado: {JSON.stringify(scanResult.tuple.data)}</p>
-              <p>pagina: {scanResult.page}</p>
-              <p>Custo de Busca: {scanResult.cost}</p>
-            </div>
-          </div>
-        )}
+        <InputRegister
+          label='Tamanho do Bucket'
+          value={entry.bucketSize === 0 ? "" : entry.bucketSize}
+          type='number'
+          changevalue={(new_value) => setEntry(current => ({ ...current, bucketSize: Number(new_value) }))}
+        />
+        <button onClick={handleSubmit}>Criar Estrutura Hash</button>
+      </div>
 
-        {hashIndex && (
-          <div>
-            <h3>Estatísticas</h3>
+      {hashIndex && (
+        <div className={styles.wrapper}>
+          <div className={styles.statistics}>
+            <h2>Estatísticas</h2>
             <ul>
               <li>Quantidade de paginas: {stats.pageQuantity}</li>
               <li>Número de Buckets: {stats.bucketQuantity}</li>
@@ -149,8 +120,56 @@ function App() {
               <li>Overflows: {hashIndex.overflows}</li>
             </ul>
           </div>
-        )}
-      </header>
+
+          <div className={styles.search}>
+            <InputRegister
+              type='text'
+              value={searchKey}
+              changevalue={(new_value => setSearchKey(new_value))}
+              label='Chave de busca'
+              placeholder="Digite a chave de busca"
+            />
+            <div className={styles.conteiners}>
+              <div className={styles.searchconteiner}>
+                <button onClick={handleSearch}>Buscar</button>
+                {searchResult && (
+                  <>
+                    <h3>Resultado da Busca:</h3>
+                    <ul>
+                      <li>Chave: {searchResult.tuple.key}</li>
+                      <li>Dado: {JSON.stringify(searchResult.tuple.data)}</li>
+                      <li>pagina: {searchResult.page}</li>
+                      <li>Custo de Busca: {searchResult.cost}</li>
+                    </ul>
+                  </>
+                )}
+              </div>
+
+              <div className={styles.searchconteiner}>
+                <button onClick={handleTableScan}>Table Scan</button>
+                {scanResult && (
+                  <>
+                    <h3>Resultado do tableScan:</h3>
+                    <ul>
+                      <li>Chave: {scanResult.tuple.key}</li>
+                      <li>Dado: {JSON.stringify(scanResult.tuple.data)}</li>
+                      <li>pagina: {scanResult.page}</li>
+                      <li>Custo de Busca: {scanResult.cost}</li>
+                    </ul>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+
+
+
+
+
     </div>
   )
 }

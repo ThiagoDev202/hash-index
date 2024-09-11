@@ -1,0 +1,53 @@
+.body {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    height: 3rem;
+    width: 20rem;
+    background-color: #252525;
+    border-bottom: 2px var(--hover-white) solid;
+
+    padding: .2rem .8rem;
+    cursor: text;
+    border-radius: 4px 4px 0 0;
+}
+
+.body>label {
+    position: absolute;
+    bottom: 50%;
+    padding-left: .25rem;
+
+    font-size: var(--size-ss);
+    font-weight: 500;
+    color: var(--hover-white);
+
+    transition: all .15s linear;
+    cursor: text;
+}
+
+.body>input {
+    width: 100%;
+    background-color: transparent;
+    align-self: flex-end;
+
+    font-size: var(--size-s);
+    color: var(--hover-white);
+    font-weight: 400;
+}
+
+.body>input::placeholder {
+    font-weight: 400;
+    font-size: var(--size-ss);
+}
+
+.body:has(>input:disabled) {
+    border-bottom: transparent;
+}
+
+.body:has(> input:-webkit-autofill),
+.body:has(> input:focus),
+.body:has(> input:not(:placeholder-shown)) {
+    border-bottom-color: var(--blue300);
+}
