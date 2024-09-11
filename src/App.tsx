@@ -114,6 +114,7 @@ function App() {
           <div className={styles.statistics}>
             <h2>Estatísticas</h2>
             <ul>
+              <li>Quantidade de dados: {entry.dataQuantity}</li>
               <li>Quantidade de paginas: {stats.pageQuantity}</li>
               <li>Número de Buckets: {stats.bucketQuantity}</li>
               <li>Colisões: {hashIndex.collisions}</li>
@@ -134,7 +135,7 @@ function App() {
                 <button onClick={handleSearch}>Buscar</button>
                 {searchResult && (
                   <>
-                    <h3>Resultado da Busca:</h3>
+                    {/* <h3>Resultado da Busca:</h3> */}
                     <ul>
                       <li>Chave: {searchResult.tuple.key}</li>
                       <li>Dado: {JSON.stringify(searchResult.tuple.data)}</li>
@@ -149,7 +150,7 @@ function App() {
                 <button onClick={handleTableScan}>Table Scan</button>
                 {scanResult && (
                   <>
-                    <h3>Resultado do tableScan:</h3>
+                    {/* <h3>Resultado do tableScan:</h3> */}
                     <ul>
                       <li>Chave: {scanResult.tuple.key}</li>
                       <li>Dado: {JSON.stringify(scanResult.tuple.data)}</li>
